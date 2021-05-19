@@ -19,7 +19,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - run: npm install    
+      - run: npm install
+        working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder    
       - name: Run Tests
         working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder
         run: |
