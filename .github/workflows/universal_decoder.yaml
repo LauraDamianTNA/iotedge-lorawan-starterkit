@@ -44,6 +44,7 @@ jobs:
           username: ${{ secrets.CONTAINER_REGISTRY_USERNAME_TEMPLD195 }}
           password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD_TEMPLD195 }}
       - run: |
+          docker -v
           docker build --platform linux/arm/v7 --rm -f "Dockerfile.arm32v7" -t templd195.azurecr.io/universaldecoder:0.0.1-arm32v7 "." 
           docker push templd195.azurecr.io/universaldecoder::0.0.1-arm32v7
         env: 
