@@ -1,4 +1,4 @@
-name: Universal Decoder CI
+name: Universal Decoder CI TNA
 on: [push] # rebuild any PRs and main branch changes
   # pull_request:
   # push:
@@ -20,31 +20,27 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - name: Switch to Universal decoder location
-        run: |
-          cd ./Samples/UniversalDecoder/modules/UniversalDecoder
       - run: npm install
-        # working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder    
+        working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder    
       - name: Run Tests
-        # working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder
+        working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder
         run: |
           npm run codecs
           npm test
+      - uses: azure/docker-login@v1
+        with:
+        login-server: templd195.azurecr.io
+        username: ${{ secrets.CONTAINER_REGISTRY_USERNAME_TEMPLD195 }}
+        password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD_TEMPLD195 }}
 
-      # - name: Retrieve secret
-      #   env:
-      #     super_secret: ${{ secrets.GITSECRET }}
-      #   run: |
-      #     ls "$super_secret"
       - name: Build and Push IoT Edge Solution
         working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder
         run: |
-          az acr login --name oneweek202105
-          docker build  --rm -f "modules\UniversalDecoder\Dockerfile.arm32v7" -t oneweek202105.azurecr.io/universaldecoder:0.0.7-arm32v7 "modules\UniversalDecoder" 
-          docker push oneweek202105.azurecr.io/universaldecoder:0.0.7-arm32v7
+          az acr login --name templd195
+          docker build  --rm -f "modules\UniversalDecoder\Dockerfile.arm32v7" -t templd195.azurecr.io/universaldecoder:0.0.7-arm32v7 "modules\UniversalDecoder" 
+          docker push templd195.azurecr.io/universaldecoder:0.0.7-arm32v7
         env: 
-          CONTAINER_REGISTRY_USERNAME_oneweek202105: secret
-          CONTAINER_REGISTRY_PASSWORD_oneweek202105: secret
+          CONTAINER_REGISTRY_USERNAME_oneweek202105: ${{ secrets.CONTAINER_REGISTRY_USERNAME_TEMPLD195 }}
+          CONTAINER_REGISTRY_PASSWORD_oneweek202105: ${{ secrets.CONTAINER_REGISTRY_PASSWORD_TEMPLD195 }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
-
 
