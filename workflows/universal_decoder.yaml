@@ -1,0 +1,46 @@
+name: Universal Decoder CI
+on: [push] # rebuild any PRs and main branch changes
+  # pull_request:
+  # push:
+  #   branches:
+  #     - master
+  #     - dev
+
+jobs:
+  Build-And-Test:
+    name: Build and Test Solution
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Use node 14
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - run: npm install
+        working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder    
+      - name: Run Tests
+        working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder
+        run: |
+          npm run codecs
+          npm test
+
+      # - name: Retrieve secret
+      #   env:
+      #     super_secret: ${{ secrets.GITSECRET }}
+      #   run: |
+      #     ls "$super_secret"
+      - name: Build and Push IoT Edge Solution
+        working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder
+        run: |
+          az acr login --name oneweek202105
+          docker build  --rm -f "modules\UniversalDecoder\Dockerfile.arm32v7" -t oneweek202105.azurecr.io/universaldecoder:0.0.7-arm32v7 "modules\UniversalDecoder" 
+          docker push oneweek202105.azurecr.io/universaldecoder:0.0.7-arm32v7
+        env: 
+          CONTAINER_REGISTRY_USERNAME_oneweek202105: secret
+          CONTAINER_REGISTRY_PASSWORD_oneweek202105: secret
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+
