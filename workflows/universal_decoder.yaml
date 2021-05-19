@@ -1,4 +1,4 @@
-name: Universal Decoder CI
+name: Universal Decoder CI TNA
 on: [push] # rebuild any PRs and main branch changes
   # pull_request:
   # push:
@@ -27,12 +27,6 @@ jobs:
         run: |
           npm run codecs
           npm test
-
-      # - name: Retrieve secret
-      #   env:
-      #     super_secret: ${{ secrets.GITSECRET }}
-      #   run: |
-      #     ls "$super_secret"
       - uses: azure/docker-login@v1
         with:
         login-server: templd195.azurecr.io
