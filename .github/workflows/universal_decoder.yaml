@@ -16,12 +16,13 @@ jobs:
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Check out repository code
         uses: actions/checkout@v2
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - run: npm install    
       - name: Run Tests
         working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder
         run: |
-          npm install
           npm run codecs
           npm test
 
@@ -30,6 +31,15 @@ jobs:
       #     super_secret: ${{ secrets.GITSECRET }}
       #   run: |
       #     ls "$super_secret"
+      - name: Build and Push IoT Edge Solution
+        working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder
+        run: |
+          az acr login --name oneweek202105
+          docker build  --rm -f "modules\UniversalDecoder\Dockerfile.arm32v7" -t oneweek202105.azurecr.io/universaldecoder:0.0.7-arm32v7 "modules\UniversalDecoder" 
+          docker push oneweek202105.azurecr.io/universaldecoder:0.0.7-arm32v7
+        env: 
+          CONTAINER_REGISTRY_USERNAME_oneweek202105: secret
+          CONTAINER_REGISTRY_PASSWORD_oneweek202105: secret
       - run: echo "🍏 This job's status is ${{ job.status }}."
 
 
