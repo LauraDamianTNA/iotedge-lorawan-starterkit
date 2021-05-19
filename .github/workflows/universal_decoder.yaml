@@ -22,9 +22,6 @@ jobs:
         working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder
         run: |
           npm install
-          echo "./Samples/UniversalDecoder/modules/UniversalDecoder/node_modules/.bin" >> $GITHUB_PATH
-          echo "$GITHUB_PATH"
-          npm install --save-dev jest
           npm run codecs
           npm test
 
