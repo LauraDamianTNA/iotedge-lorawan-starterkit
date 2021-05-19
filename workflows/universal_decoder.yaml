@@ -29,9 +29,9 @@ jobs:
           npm test
       - uses: azure/docker-login@v1
         with:
-        login-server: templd195.azurecr.io
-        username: ${{ secrets.CONTAINER_REGISTRY_USERNAME_TEMPLD195 }}
-        password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD_TEMPLD195 }}
+          login-server: templd195.azurecr.io
+          username: ${{ secrets.CONTAINER_REGISTRY_USERNAME_TEMPLD195 }}
+          password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD_TEMPLD195 }}
 
       - name: Build and Push IoT Edge Solution
         working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder
