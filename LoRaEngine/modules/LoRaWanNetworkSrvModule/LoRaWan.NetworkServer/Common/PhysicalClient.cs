@@ -54,7 +54,7 @@ namespace LoRaWan.NetworkServer.Common
             }
             else
             {
-                Logger.Log("Using physical client with the packet forwarder implementation", LogLevel.Information);
+                Logger.Log("Using physical client with original packet forwarder implementation", LogLevel.Information);
                 var loRaDeviceAPIService = new LoRaDeviceAPIService(configuration, new ServiceFacadeHttpClientProvider(configuration, ApiVersion.LatestVersion));
                 var frameCounterStrategyProvider = new LoRaDeviceFrameCounterUpdateStrategyProvider(configuration.GatewayID, loRaDeviceAPIService);
                 var deduplicationStrategyFactory = new DeduplicationStrategyFactory(loRaDeviceAPIService);
