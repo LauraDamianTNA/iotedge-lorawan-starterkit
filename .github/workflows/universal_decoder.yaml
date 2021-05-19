@@ -10,35 +10,46 @@ jobs:
   Build-And-Test:
     name: Build and Test Solution
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./app
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Check out repository code
         uses: actions/checkout@v2
-      - name: Use node 14
+      - name: Use node JS
         uses: actions/setup-node@v2
         with:
           node-version: '14'
       - run: npm install
-        working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder    
-      - name: Run Tests
-        working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder
+      - name: Get vendor file
         run: |
           npm run codecs
+      - name: Run Tests
+        run: |
           npm test
-      - uses: azure/docker-login@v1
+
+# https://docs.microsoft.com/en-us/azure/container-instances/container-instances-github-action
+  Create-Image:
+    name: Push Image in Azure Container Registry
+    needs: Build-And-Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Build and Push Image
+        uses: azure/docker-login@v1
         with:
           login-server: templd195.azurecr.io
           username: ${{ secrets.CONTAINER_REGISTRY_USERNAME_TEMPLD195 }}
           password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD_TEMPLD195 }}
-
-      - name: Build and Push IoT Edge Solution
         working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder
         run: |
-          az acr login --name templd195
-          docker build  --rm -f "modules\UniversalDecoder\Dockerfile.arm32v7" -t templd195.azurecr.io/universaldecoder:0.0.7-arm32v7 "modules\UniversalDecoder" 
-          docker push templd195.azurecr.io/universaldecoder:0.0.7-arm32v7
+          docker build  --rm -f "modules\UniversalDecoder\Dockerfile.arm32v7" -t templd195.azurecr.io/universaldecoder::${{ github.sha }}-arm32v7 "modules\UniversalDecoder" 
+          docker push templd195.azurecr.io/universaldecoder::${{ github.sha }}-arm32v7
         env: 
           CONTAINER_REGISTRY_USERNAME_oneweek202105: ${{ secrets.CONTAINER_REGISTRY_USERNAME_TEMPLD195 }}
           CONTAINER_REGISTRY_PASSWORD_oneweek202105: ${{ secrets.CONTAINER_REGISTRY_PASSWORD_TEMPLD195 }}
