@@ -1,10 +1,10 @@
 name: Universal Decoder CI
-on: # rebuild any PRs and main branch changes
-  pull_request:
-  push:
-    branches:
-      - master
-      - dev
+on: [push] # rebuild any PRs and main branch changes
+  # pull_request:
+  # push:
+  #   branches:
+  #     - master
+  #     - dev
 
 jobs:
   Build-And-Test:
