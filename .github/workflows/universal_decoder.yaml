@@ -47,7 +47,10 @@ jobs:
         run: docker buildx build --rm -f "Dockerfile.${{ matrix.image }}" -t ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}}-${{ matrix.image }} "." 
       - name: Push the tagged Docker image
         run: docker push ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}}-${{ matrix.image }}
-#      - name: Create manifest list
-#        run: docker manifest create  ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}}-${{ matrix.image }} --amend   
+      - name: Create manifest list
+        run: docker manifest create  ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}} ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}}-arm32v7  ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}}-amd64 --amend
+      - name: Push manifest
+        run: docker manifest push  ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}}
+        
 
       - run: echo "🍏 This job's status is ${{ job.status }}."
