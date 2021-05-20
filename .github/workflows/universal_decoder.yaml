@@ -53,6 +53,12 @@ jobs:
     needs: Test_And_Push
     steps:
       - run: echo "output ${{needs.Test_And_Push.outputs.tag}}"
+      - name: Login to registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.CONTAINER_REGISTRY }}
+          username: ${{ secrets.CONTAINER_REGISTRY_USERNAME_TEMPLD195 }}
+          password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD_TEMPLD195 }}
       - name: Create manifest list
         run: docker manifest create  ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{needs.Test_And_Push.outputs.tag}} ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{needs.Test_And_Push.outputs.tag}}-arm32v7  ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{needs.Test_And_Push.outputs.tag}}-amd64 --amend
       - name: Push manifest
