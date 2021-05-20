@@ -14,11 +14,14 @@ jobs:
       DOCKER_TARGET_PLATFORM: linux/arm/v7                 
     steps:    
     - name: Checkout the code       
-      uses: actions/checkout@v1          
+      uses: actions/checkout@v2          
     - name: Set up Docker Buildx      
       uses: crazy-max/ghaction-docker-buildx@v1      
       with:        
-        version: latest    
+        version: latest
+    - run: npm install
+    - name: Get vendor file
+      run: npm run codecs
     - name: Prepare      
       if: success()      
       id: prepare      
