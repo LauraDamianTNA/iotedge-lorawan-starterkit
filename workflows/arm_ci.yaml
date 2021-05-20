@@ -1,7 +1,5 @@
-name: Docker Build/Publish Image 
-on:  
-  push:    
-    branches: [ master ]  
+name: Docker ARM 32
+on: [push]
 jobs:   
   build:    
     runs-on: ubuntu-18.04    
