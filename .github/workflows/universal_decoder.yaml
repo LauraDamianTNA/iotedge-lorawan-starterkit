@@ -1,61 +1,33 @@
-name: Universal Decoder CI TNA
-on: [push] # rebuild any PRs and main branch changes
-  # pull_request:
-  # push:
-  #   branches:
-  #     - master
-  #     - dev
-
-jobs:
-  Build-And-Test:
-    name: Build and Test Solution
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        image:
-          - arm32v7
-    defaults:
-      run:
-        working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v2
-      - name: Use node JS
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-      - run: npm install
-      - name: Get vendor file
-        run: |
-          npm run codecs
-      - name: Run Tests
-        run: |
-          npm test
-
-# # https://docs.microsoft.com/en-us/azure/container-instances/container-instances-github-action
-#   Create-Image:
-#     name: Push Image in Azure Container Registry
-#     needs: Build-And-Test
-#     runs-on: ubuntu-latest
-    
-#     steps:
-#       - name: Check out repository code
-#         uses: actions/checkout@v2
-       
-      - name: Login to registry
-        uses: azure/docker-login@v1
-        with:
-          login-server: ${{ secrets.CONTAINER_REGISTRY }}
-          username: ${{ secrets.CONTAINER_REGISTRY_USERNAME_TEMPLD195 }}
-          password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD_TEMPLD195 }}
-      - name: Get the image version
-        id: vars
-        run: echo ::set-output name=tag::0.0.$(echo ${GITHUB_SHA})
-      - name: Build the tagged Docker image
-        run: docker buildx build --platform linux/arm/v7 --rm -f "Dockerfile.${{ matrix.image }}" -t ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}}-${{ matrix.image }} "." 
-      - name: Push the tagged Docker image
-        run: docker push ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}}-${{ matrix.image }}
-#      - name: Create manifest list
-#        run: docker manifest create  ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}}-${{ matrix.image }} --amend   
-
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+name: Docker ARM 32
+on: [push]
+jobs:   
+  build:    
+    runs-on: ubuntu-18.04    
+    env:      
+      DOCKER_REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}    
+      DOCKER_IMAGE: ${{ secrets.CONTAINER_REGISTRY }}/univdecoder     
+      DOCKER_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME_TEMPLD195 }}
+      DOCKER_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD_TEMPLD195 }} 
+      DOCKER_TARGET_PLATFORM: linux/arm/v7                 
+    steps:    
+    - name: Checkout the code       
+      uses: actions/checkout@v1          
+    - name: Set up Docker Buildx      
+      uses: crazy-max/ghaction-docker-buildx@v1      
+      with:        
+        version: latest    
+    - name: Prepare      
+      if: success()      
+      id: prepare      
+      run: |        
+        echo ::set-output name=docker_platform::${DOCKER_TARGET_PLATFORM}        
+        echo ::set-output name=docker_image::${DOCKER_REGISTRY}/${DOCKER_IMAGE}        
+        echo ::set-output name=version::${GITHUB_RUN_NUMBER}    
+    - name: Docker Login      
+      if: success()      
+      run: |        
+        echo "${DOCKER_PASSWORD}" | docker login ${DOCKER_REGISTRY} --username "${DOCKER_USERNAME}" --password-stdin          
+    - name: Run Buildx (push image)      
+      if: success()      
+      run: |        
+        docker buildx build --platform ${{ steps.prepare.outputs.docker_platform }} --tag ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} --file ./Dockerfile.arm32v7 --output type=image,push=true .
