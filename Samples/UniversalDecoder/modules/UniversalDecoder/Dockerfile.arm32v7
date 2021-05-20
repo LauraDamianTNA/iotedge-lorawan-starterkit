@@ -4,11 +4,7 @@ WORKDIR /app/
 
 COPY package*.json ./
 
-RUN uname -a
-RUN which npm
-RUN npm -version
-RUN npm config set unsafe-perm true
-RUN npm install --verbose
+RUN npm install --production
 
 COPY *.js ./
 COPY codecs ./codecs
