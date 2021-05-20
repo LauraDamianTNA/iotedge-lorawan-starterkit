@@ -45,7 +45,7 @@ jobs:
           password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD_TEMPLD195 }}
       - run: |
           docker -v
-          docker build  --rm -f "Dockerfile.amd64" -t templd195.azurecr.io/universaldecoder:0.0.1-amd64 "." 
+          DOCKER_BUILDKIT=1 docker build --rm -f "Dockerfile.amd64" -t templd195.azurecr.io/universaldecoder:0.0.1-amd64 "." 
           docker push templd195.azurecr.io/universaldecoder:0.0.1-amd64
 
 #          docker build  --rm -f "Dockerfile.arm32v7" -t templd195.azurecr.io/universaldecoder:0.0.1-arm32v7 "." 
