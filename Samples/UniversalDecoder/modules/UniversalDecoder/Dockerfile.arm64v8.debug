@@ -1,4 +1,4 @@
-FROM arm64v8/node:10-slim
+FROM arm64v8/node:14-slim
 
 WORKDIR /app/
 
@@ -6,7 +6,8 @@ COPY package*.json ./
 
 RUN npm install --production
 
-COPY app.js ./
+COPY *.js ./
+COPY codecs ./codecs
 
 EXPOSE 9229
 
