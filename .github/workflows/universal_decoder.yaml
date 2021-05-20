@@ -15,10 +15,10 @@ jobs:
     steps:    
     - name: Checkout the code       
       uses: actions/checkout@v2          
-    - name: Set up Docker Buildx      
-      uses: crazy-max/ghaction-docker-buildx@v1      
-      with:        
-        version: latest
+#     - name: Set up Docker Buildx      
+#       uses: crazy-max/ghaction-docker-buildx@v1      
+#       with:        
+#         version: latest
     - run: npm install
     - name: Get vendor file
       run: npm run codecs
