@@ -1,9 +1,10 @@
-FROM arm32v7/node:14-alpine
+FROM arm32v7/node:14-slim
 
 WORKDIR /app/
 
 COPY package*.json ./
 
+RUN which npm
 RUN npm -version
 RUN npm config set unsafe-perm true
 RUN npm install --verbose
