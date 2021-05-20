@@ -13,7 +13,6 @@ jobs:
     strategy:
       matrix:
         image:
-          - amd64
           - arm32v7
     defaults:
       run:
@@ -53,12 +52,10 @@ jobs:
         id: vars
         run: echo ::set-output name=tag::0.0.$(echo ${GITHUB_SHA})
       - name: Build the tagged Docker image
-        run: DOCKER_BUILDKIT=1 docker build  --rm -f "Dockerfile.${{ matrix.image }}" -t ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}}-${{ matrix.image }} "." 
+        run: DOCKER_BUILDKIT=1 docker build  --platform linux/arm/v7 --rm -f "Dockerfile.${{ matrix.image }}" -t ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}}-${{ matrix.image }} "." 
       - name: Push the tagged Docker image
         run: docker push ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}}-${{ matrix.image }}
-      #- name: Create manifest list
-      #  run: docker manifest create  ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}}-${{ matrix.image }} --amend   
+#      - name: Create manifest list
+#        run: docker manifest create  ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}}-${{ matrix.image }} --amend   
 
       - run: echo "🍏 This job's status is ${{ job.status }}."
-
-
