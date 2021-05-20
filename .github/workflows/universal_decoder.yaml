@@ -9,7 +9,7 @@ jobs:
       matrix:
         image:
           - arm32v7
-          #- amd64
+          - amd64
     defaults:
       run:
         working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder
