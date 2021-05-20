@@ -37,16 +37,19 @@ jobs:
 #     steps:
 #       - name: Check out repository code
 #         uses: actions/checkout@v2
-      - name: Build and Push Image
+       
+      - name: Login to registry
         uses: azure/docker-login@v1
         with:
           login-server: templd195.azurecr.io
           username: ${{ secrets.CONTAINER_REGISTRY_USERNAME_TEMPLD195 }}
           password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD_TEMPLD195 }}
+      - name: Get the image version
+        id: vars
+        run: echo ::set-output name=tag::$(echo ${GITHUB_REF:10})    
       - run: |
-          docker -v
-          DOCKER_BUILDKIT=1 docker build --rm -f "Dockerfile.amd64" -t templd195.azurecr.io/universaldecoder:0.0.1-amd64 "." 
-          docker push templd195.azurecr.io/universaldecoder:0.0.1-amd64
+          DOCKER_BUILDKIT=1 docker build --rm -f "Dockerfile.amd64" -t templd195.azurecr.io/universaldecoder:${{steps.vars.outputs.tag}}-amd64 "." 
+          docker push templd195.azurecr.io/universaldecoder:${{steps.vars.outputs.tag}}-amd64
 
 #          docker build  --rm -f "Dockerfile.arm32v7" -t templd195.azurecr.io/universaldecoder:0.0.1-arm32v7 "." 
 #          docker push templd195.azurecr.io/universaldecoder:0.0.1-arm32v7
