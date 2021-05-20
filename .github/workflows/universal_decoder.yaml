@@ -2,7 +2,10 @@ name: Docker ARM 32
 on: [push]
 jobs:   
   build:    
-    runs-on: ubuntu-18.04    
+    runs-on: ubuntu-18.04
+    defaults:
+      run:
+        working-directory: ./Samples/UniversalDecoder/modules/UniversalDecoder
     env:      
       DOCKER_REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}    
       DOCKER_IMAGE: ${{ secrets.CONTAINER_REGISTRY }}/univdecoder     
@@ -30,4 +33,4 @@ jobs:
     - name: Run Buildx (push image)      
       if: success()      
       run: |        
-        docker buildx build --platform ${{ steps.prepare.outputs.docker_platform }} --tag ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} --file ./Dockerfile.arm32v7 --output type=image,push=true .
+        docker buildx build --platform ${{ steps.prepare.outputs.docker_platform }} --tag ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} --file "Dockerfile.arm32v7" --output type=image,push=true .
