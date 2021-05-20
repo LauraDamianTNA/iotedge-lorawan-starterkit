@@ -48,7 +48,7 @@ jobs:
         id: vars
         run: |
           echo ::set-output name=tag::$(echo ${GITHUB_REF:10})
-          cat $(echo ${GITHUB_REF:10})
+          echo ${GITHUB_REF:10}
       - run: |
            DOCKER_BUILDKIT=1 docker build  --rm -f "Dockerfile.arm32v7" -t templd195.azurecr.io/universaldecoder:0.0.1-arm32v7 "." 
            docker push templd195.azurecr.io/universaldecoder:0.0.1-arm32v7
