@@ -22,8 +22,6 @@ jobs:
            install: true
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
-      - name: Available platforms
-        run: echo ${{ steps.buildx.outputs.platforms }}     
       - name: Use node JS
         uses: actions/setup-node@v2
         with:
@@ -46,7 +44,7 @@ jobs:
         id: vars
         run: echo ::set-output name=tag::0.0.$(echo ${GITHUB_SHA})
       - name: Build the tagged Docker image
-        run: docker build --rm -f "Dockerfile.${{ matrix.image }}" -t ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}}-${{ matrix.image }} "." 
+        run: docker buildx build --rm -f "Dockerfile.${{ matrix.image }}" -t ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}}-${{ matrix.image }} "." 
       - name: Push the tagged Docker image
         run: docker push ${{ secrets.CONTAINER_REGISTRY }}/universaldecoder:${{steps.vars.outputs.tag}}-${{ matrix.image }}
 #      - name: Create manifest list
