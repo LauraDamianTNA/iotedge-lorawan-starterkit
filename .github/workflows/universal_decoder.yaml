@@ -22,6 +22,10 @@ jobs:
         id: buildx
         with:
           install: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Available platforms
+        run: echo ${{ steps.buildx.outputs.platforms }}     
       - name: Use node JS
         uses: actions/setup-node@v2
         with:
